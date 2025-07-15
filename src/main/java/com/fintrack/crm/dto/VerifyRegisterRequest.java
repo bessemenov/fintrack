@@ -1,6 +1,6 @@
 package com.fintrack.crm.dto;
 
-public class ConfirmRegisterRequest {
+public class VerifyRegisterRequest {
     private String email;
     private String verificationCode;
 

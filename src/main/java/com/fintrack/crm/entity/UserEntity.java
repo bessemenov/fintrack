@@ -1,7 +1,7 @@
 package com.fintrack.crm.entity;
 
+import com.fintrack.crm.enums.UserStatus;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -11,17 +11,9 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String email;
-
-    @Column(name = "enabled")
-    private boolean enabled;
-
-    @Column(name = "verification_code")
-    private String verificationCode;
-
-    @Column(name = "code_sent_at")
-    private LocalDateTime codeSentAt;
+    private UserStatus status;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -29,6 +21,13 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserVerificationEntity verification;
+
+    // --- GETTER ve SETTER'lar ---
 
     public Long getId() {
         return id;
@@ -38,36 +37,12 @@ public class UserEntity {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public UserStatus getStatus() {
+        return status;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
-    }
-
-    public LocalDateTime getCodeSentAt() {
-        return codeSentAt;
-    }
-
-    public void setCodeSentAt(LocalDateTime codeSentAt) {
-        this.codeSentAt = codeSentAt;
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 
     public String getUsername() {
@@ -86,4 +61,27 @@ public class UserEntity {
         this.password = password;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UserVerificationEntity getVerification() {
+        return verification;
+    }
+
+    public void setVerification(UserVerificationEntity verification) {
+        this.verification = verification;
+
+        // 💡 İlişkiyi iki yönlü yönet:
+        if (verification != null && verification.getUser() != this) {
+            verification.setUser(this);
+        }
+    }
 }
+
+
+

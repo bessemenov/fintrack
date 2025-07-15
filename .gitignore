@@ -34,3 +34,10 @@ build/
 "src/main/resources/application.properties" 
 src/main/resources/application.properties
 src/main/resources/application.yml
+# Security klasörü pushlanmasın
+src/main/java/com/fintrack/security/
+
+# Config dosyaları pushlanmasın
+src/main/resources/application.properties
+src/main/resources/application.yml
+
