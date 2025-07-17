@@ -1,11 +1,8 @@
 package com.fintrack.crm.controller;
 
-import com.fintrack.crm.dto.RegisterRequest;
-import com.fintrack.crm.dto.UserResponseDTO;
-import com.fintrack.crm.dto.VerifyRegisterRequest;
+import com.fintrack.crm.dto.*;
 import com.fintrack.crm.service.EmailService;
 import com.fintrack.crm.service.UserService;
-import com.fintrack.crm.dto.LoginRequest;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -102,6 +99,20 @@ public class UserController {
         logger.info("Kullanıcı detayları istendi");
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        userService.sendPasswordResetCode(request.getEmail());
+        return ResponseEntity.ok("Şifre sıfırlama kodu e-posta adresinize gönderildi.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        userService.resetPassword(request.getEmail(), request.getVerificationCode(), request.getNewPassword());
+        return ResponseEntity.ok("Şifre başarıyla güncellendi.");
+    }
+
+
 }
 
 

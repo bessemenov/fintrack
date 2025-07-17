@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -28,15 +30,17 @@ public class UserService {
     private final UserVerificationRepository userVerificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     public UserService(UserRepository userRepository,
                        UserVerificationRepository userVerificationRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil,EmailService emailService) {
         this.userRepository = userRepository;
         this.userVerificationRepository = userVerificationRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
     }
 
     public void registerUser(String email, String username, String password, String verificationCode, LocalDateTime expirationTime, String phoneNumber) {
@@ -57,11 +61,11 @@ public class UserService {
         UserEntity savedUser = userRepository.save(user);
 
         UserVerificationEntity verification = new UserVerificationEntity();
-        verification.setUser(savedUser); // Kaydedilmiş user'i kullan
+        verification.setUser(savedUser);
         verification.setEmail(email);
         verification.setVerificationCode(verificationCode);
         verification.setVerificationCodeExpiration(expirationTime);
-        verification.setCodeSentAt(LocalDateTime.now()); // Burada set et
+        verification.setCodeSentAt(LocalDateTime.now());
 
         logger.info("BEFORE SAVE: verificationCode = {}, expirationTime = {}",
                 verification.getVerificationCode(),
@@ -129,7 +133,7 @@ public class UserService {
         }
 
         logger.info("[Login] Giriş başarılı - Email: {}", email);
-        return jwtUtil.generateToken(email);
+        return jwtUtil.generateToken(email, user.getId());
     }
 
     public List<UserResponseDTO> getAllUsers() {
@@ -148,7 +152,54 @@ public class UserService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // ✅ Şifremi unuttum: reset kodu gönder
+    public void sendPasswordResetCode(String email) {
+        UserVerificationEntity verification = userVerificationRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Bu email adresine ait kullanıcı bulunamadı: " + email));
+
+        UserEntity user = verification.getUser();
+
+        String code = String.valueOf(new Random().nextInt(900000) + 100000); // 6 haneli
+
+        verification.setVerificationCode(code);
+        verification.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(10));
+        verification.setCodeSentAt(LocalDateTime.now());
+
+        userVerificationRepository.save(verification);
+
+        logger.info("[Şifre Sıfırlama] Kod gönderildi - Email: {}, Kod: {}", email, code);
+
+        // ✅ BURASI: Mevcut EmailService metodunu kullan
+        emailService.sendVerificationCode(email, code, verification.getVerificationCodeExpiration());
+    }
+
+    public void resetPassword(String email, String verificationCode, String newPassword) {
+        UserVerificationEntity verification = userVerificationRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı"));
+
+        if (verification.getVerificationCode() == null ||
+                !verification.getVerificationCode().equals(verificationCode)) {
+            throw new InvalidVerificationCodeException("Kod hatalı veya eksik");
+        }
+
+        if (verification.getVerificationCodeExpiration() == null ||
+                verification.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
+            throw new ExpiredVerificationCodeException("Kod süresi dolmuş");
+        }
+
+        UserEntity user = verification.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Kullanılan kodu sıfırla
+        verification.setVerificationCode(null);
+        verification.setVerificationCodeExpiration(null);
+        userVerificationRepository.save(verification);
+    }
+
 }
+
 
 
 

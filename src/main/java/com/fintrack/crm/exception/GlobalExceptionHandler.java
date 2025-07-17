@@ -58,4 +58,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Giriş başarısız: " + ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidIncomeException.class)
+    public ResponseEntity<String> handleInvalidIncome(InvalidIncomeException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
 }

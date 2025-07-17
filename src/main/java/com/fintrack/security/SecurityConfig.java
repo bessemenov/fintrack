@@ -36,7 +36,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/user/register",
                                 "/user/login",
-                                "/user/verify"
+                                "/user/verify",
+                                "/user/forgot-password",       // ✅ yeni eklenen
+                                "/user/reset-password"         // ✅ birazdan eklenecek olan
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
