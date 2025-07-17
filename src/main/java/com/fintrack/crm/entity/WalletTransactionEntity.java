@@ -11,11 +11,9 @@ public class WalletTransactionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ Sistem tarafından otomatik atanan kayıt zamanı
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    // ✅ Kullanıcının belirttiği işlem zamanı
     @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate;
 
@@ -30,8 +28,6 @@ public class WalletTransactionEntity {
     @ManyToOne
     @JoinColumn(name = "expense_id")
     private ExpenseEntity expense;
-
-    // === GETTER & SETTER ===
 
     public Long getId() {
         return id;

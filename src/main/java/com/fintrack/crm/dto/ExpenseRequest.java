@@ -8,15 +8,13 @@ import java.time.LocalDateTime;
 
 public class ExpenseRequest {
 
-    private Long expenseId;         // yeni eklendi
-    private Long walletId;          // yeni eklendi
+    private Long expenseId;
+    private Long walletId;
     private Long userId;
     private ExpenseType expenseType;
     private BigDecimal amount;
     private PeriodType periodType;
     private LocalDateTime transactionDate;
-
-    // === GETTER - SETTER ===
 
     public Long getExpenseId() {
         return expenseId;

@@ -153,7 +153,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Şifremi unuttum: reset kodu gönder
     public void sendPasswordResetCode(String email) {
         UserVerificationEntity verification = userVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Bu email adresine ait kullanıcı bulunamadı: " + email));
@@ -170,7 +169,6 @@ public class UserService {
 
         logger.info("[Şifre Sıfırlama] Kod gönderildi - Email: {}, Kod: {}", email, code);
 
-        // ✅ BURASI: Mevcut EmailService metodunu kullan
         emailService.sendVerificationCode(email, code, verification.getVerificationCodeExpiration());
     }
 
@@ -192,7 +190,6 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        // Kullanılan kodu sıfırla
         verification.setVerificationCode(null);
         verification.setVerificationCodeExpiration(null);
         userVerificationRepository.save(verification);

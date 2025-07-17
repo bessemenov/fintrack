@@ -27,8 +27,6 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationEntity verification;
 
-    // --- GETTER ve SETTER'lar ---
-
     public Long getId() {
         return id;
     }

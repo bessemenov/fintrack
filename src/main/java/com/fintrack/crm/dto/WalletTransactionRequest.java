@@ -7,7 +7,7 @@ public class WalletTransactionRequest {
     private Long walletId;
     private Long incomeId;
     private Long expenseId;
-    private LocalDateTime transactionDate; // ✅ kullanıcıdan gelen tarih
+    private LocalDateTime transactionDate;
 
 
     public Long getWalletId() {

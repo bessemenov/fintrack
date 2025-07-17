@@ -42,8 +42,8 @@ public class WalletTransactionService {
         WalletTransactionEntity transaction = new WalletTransactionEntity();
         transaction.setWallet(wallet);
         transaction.setIncome(income);
-        transaction.setCreatedAt(now);            // sistem zamanı
-        transaction.setTransactionDate(userDate); // kullanıcıdan gelen tarih (varsa)
+        transaction.setCreatedAt(now);
+        transaction.setTransactionDate(userDate);
 
         walletTransactionRepository.save(transaction);
 
@@ -65,8 +65,8 @@ public class WalletTransactionService {
         WalletTransactionEntity transaction = new WalletTransactionEntity();
         transaction.setWallet(wallet);
         transaction.setExpense(expense);
-        transaction.setCreatedAt(now);            // sistem zamanı
-        transaction.setTransactionDate(userDate); // kullanıcıdan gelen tarih (varsa)
+        transaction.setCreatedAt(now);
+        transaction.setTransactionDate(userDate);
 
         walletTransactionRepository.save(transaction);
 
