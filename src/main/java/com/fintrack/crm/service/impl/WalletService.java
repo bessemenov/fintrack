@@ -1,13 +1,14 @@
-package com.fintrack.crm.service;
+package com.fintrack.crm.service.impl;
 
 import com.fintrack.crm.entity.WalletEntity;
 import com.fintrack.crm.repository.WalletRepository;
+import com.fintrack.crm.service.IWalletService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
-public class WalletService {
+public class WalletService implements IWalletService {
 
     private final WalletRepository walletRepository;
 
@@ -15,6 +16,7 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
+    @Override
     public void increaseBalance(Long userId, BigDecimal amount) {
         WalletEntity wallet = walletRepository.findByUserId(userId).orElseGet(() -> {
             WalletEntity newWallet = new WalletEntity();
@@ -27,17 +29,19 @@ public class WalletService {
         walletRepository.save(wallet);
     }
 
-    public WalletEntity getWallet(Long userId) {
-        return walletRepository.findByUserId(userId).orElse(null);
-    }
-
+    @Override
     public void decreaseBalance(Long userId, BigDecimal amount) {
         WalletEntity wallet = walletRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cüzdan bulunamadı"));
+                .orElseThrow(() -> new RuntimeException("Wallet not found."));
 
         wallet.setBalance(wallet.getBalance().subtract(amount));
         walletRepository.save(wallet);
     }
 
+    @Override
+    public WalletEntity getWallet(Long userId) {
+        return walletRepository.findByUserId(userId).orElse(null);
+    }
 }
+
 

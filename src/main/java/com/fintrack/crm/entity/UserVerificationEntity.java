@@ -12,8 +12,8 @@ public class UserVerificationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     @Column(nullable = false)

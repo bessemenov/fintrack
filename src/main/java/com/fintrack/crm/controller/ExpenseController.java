@@ -2,8 +2,8 @@ package com.fintrack.crm.controller;
 
 import com.fintrack.crm.dto.ExpenseRequest;
 import com.fintrack.crm.entity.ExpenseEntity;
-import com.fintrack.crm.service.ExpenseService;
-import com.fintrack.crm.util.JwtUtil;
+import com.fintrack.crm.service.impl.ExpenseService;
+import com.fintrack.security.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

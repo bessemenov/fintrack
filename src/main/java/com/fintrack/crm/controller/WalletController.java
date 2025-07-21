@@ -1,8 +1,8 @@
 package com.fintrack.crm.controller;
 
 import com.fintrack.crm.entity.WalletEntity;
-import com.fintrack.crm.service.WalletService;
-import com.fintrack.crm.util.JwtUtil;
+import com.fintrack.crm.service.impl.WalletService;
+import com.fintrack.security.utils.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

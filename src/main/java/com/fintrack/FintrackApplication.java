@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 
+/**
+ * TODO: loglar, response'lar vs her şey ingilizce olsun son karar
+ */
+
 @SpringBootApplication
 public class FintrackApplication {
 

@@ -1,5 +1,7 @@
 package com.fintrack.crm.entity;
 
+import com.fintrack.exception.BusinessException;
+import com.fintrack.exception.enums.ErrorResultCode;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -16,9 +18,8 @@ public class WalletEntity {
     private Long userId;
 
     @Column(nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;
+    private BigDecimal balance;
 
-    // Getter - Setter
     public Long getId() {
         return id;
     }
@@ -40,6 +41,10 @@ public class WalletEntity {
     }
 
     public void setBalance(BigDecimal balance) {
+        if (balance == null) {
+            throw new BusinessException(ErrorResultCode.BALANCE_CANNOT_BE_NULL, "Balance must not be null");
+        }
         this.balance = balance;
     }
 }
+
