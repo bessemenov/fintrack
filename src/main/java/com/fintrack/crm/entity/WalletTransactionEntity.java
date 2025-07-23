@@ -29,6 +29,14 @@ public class WalletTransactionEntity {
     @JoinColumn(name = "expense_id")
     private ExpenseEntity expense;
 
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "tag_id")
+    private Long tagId;
+
+
+
     public Long getId() {
         return id;
     }
@@ -76,5 +84,22 @@ public class WalletTransactionEntity {
     public void setExpense(ExpenseEntity expense) {
         this.expense = expense;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
+    }
+
+
 }
 

@@ -7,8 +7,9 @@ public class WalletTransactionRequest {
     private Long walletId;
     private Long incomeId;
     private Long expenseId;
-    private LocalDateTime transactionDate;
-
+    private Long tagId;
+    private LocalDateTime transactionDateTime;
+    private String description;
 
     public Long getWalletId() {
         return walletId;
@@ -34,12 +35,29 @@ public class WalletTransactionRequest {
         this.expenseId = expenseId;
     }
 
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
+    public Long getTagId() {
+        return tagId;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
+    }
+
+    public LocalDateTime getTransactionDateTime() {
+        return transactionDateTime;
+    }
+
+    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+        this.transactionDateTime = transactionDateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
+
 
