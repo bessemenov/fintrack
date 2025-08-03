@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yeni İşlem Ekle</title>
+</head>
+<body>
+  <h2>Yeni İşlem Ekle</h2>
+
+  <label>İşlem Tipi:</label>
+  <select id="type" onchange="loadTags()" required>
+    <option value="">Seçiniz</option>
+    <option value="INCOME">Gelir</option>
+    <option value="EXPENSE">Gider</option>
+  </select>
+
+  <br /><br />
+
+  <label>Tutar:</label>
+  <input id="amount" type="number" placeholder="Örn: 1200" required />
+
+  <br /><br />
+
+  <label>Tarih:</label>
+  <input id="date" type="date" required />
+
+  <br /><br />
+
+  <label>Tag Seç:</label>
+  <select id="tagSelect" required>
+    <option value="">Önce işlem tipi seçin</option>
+  </select>
+
+  <br /><br />
+
+  <label>Cüzdan Seç:</label>
+  <select id="walletSelect" required>
+    <option value="">Yükleniyor...</option>
+  </select>
+
+  <br /><br />
+
+  <button onclick="submitTransaction()">İşlemi Kaydet</button>
+  <button onclick="window.location.href='dashboard.html'">Geri Dön</button>
+
+  <script>
+    let token = localStorage.getItem("token");
+    if (!token) {
+      alert("Giriş yapmanız gerekiyor.");
+      window.location.href = "login.html";
+    }
+
+    if (token.startsWith("Bearer ")) {
+      token = token.substring(7);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      loadWallets();
+    });
+
+    function loadTags() {
+      const type = document.getElementById("type").value;
+      const tagSelect = document.getElementById("tagSelect");
+      tagSelect.innerHTML = "";
+
+      if (!type) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "Önce işlem tipi seçin";
+        tagSelect.appendChild(opt);
+        return;
+      }
+
+      fetch(`http://localhost:8080/tags/tag-list-by-type?type=${type}`, {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Tag listesi alınamadı.");
+          return res.json();
+        })
+        .then(data => {
+          if (data.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "Tag bulunamadı";
+            tagSelect.appendChild(opt);
+          } else {
+            data.forEach(tag => {
+              const opt = document.createElement("option");
+              opt.value = tag.id;
+              opt.textContent = tag.name;
+              tagSelect.appendChild(opt);
+            });
+          }
+        })
+        .catch(err => alert("Tag hatası: " + err.message));
+    }
+
+    function loadWallets() {
+      fetch("http://localhost:8080/wallets", {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Cüzdanlar yüklenemedi.");
+          return res.json();
+        })
+        .then(data => {
+          const walletSelect = document.getElementById("walletSelect");
+          walletSelect.innerHTML = "";
+          if (data.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "Hiç cüzdan yok.";
+            walletSelect.appendChild(opt);
+          } else {
+            data.forEach(wallet => {
+              const opt = document.createElement("option");
+              opt.value = wallet.id;
+              opt.textContent = `ID: ${wallet.id} | Bakiye: ${wallet.balance} ₺`;
+              walletSelect.appendChild(opt);
+            });
+          }
+        })
+        .catch(err => alert("Cüzdan hatası: " + err.message));
+    }
+
+    function submitTransaction() {
+      const type = document.getElementById("type").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const date = document.getElementById("date").value;
+      const tagId = parseInt(document.getElementById("tagSelect").value);
+      const walletId = parseInt(document.getElementById("walletSelect").value);
+
+      if (!type || isNaN(amount) || !date || isNaN(tagId) || isNaN(walletId)) {
+        alert("Tüm alanları eksiksiz doldurun.");
+        return;
+      }
+
+      const body = {
+        amount,
+        walletId,
+        tagId,
+        transactionDateTime: `${date}T00:00:00`,
+        description: "",
+        periodType: "ONCE"
+      };
+
+      if(type === "INCOME") {
+        body.incomeType = "STANDART";
+      } else if(type === "EXPENSE") {
+        body.expenseType = "BIR_DEFALIK"; // uygun default veya dinamik seçilebilir
+      }
+
+      const url =
+        type === "INCOME"
+          ? "http://localhost:8080/wallet-transactions/incomes"
+          : "http://localhost:8080/wallet-transactions/expenses";
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(body)
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("İşlem başarısız.");
+          return res.text();
+        })
+        .then(() => {
+          alert("İşlem başarıyla kaydedildi.");
+          window.location.href = "dashboard.html";
+        })
+        .catch(err => alert("Hata: " + err.message));
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+

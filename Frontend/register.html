@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kayıt Ol</title>
+</head>
+<body>
+  <h2>Kayıt Ol</h2>
+
+  <input id="email" placeholder="Email" />
+  <input id="password" placeholder="Şifre" type="password" />
+  <input id="username" placeholder="Kullanıcı Adı" />
+  <input id="phoneNumber" placeholder="Telefon (05xx...)" />
+
+  <button onclick="register()">Kayıt Ol</button>
+
+  <p>Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
+
+  <script>
+    function register() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+      if (!email || !password || !username || !phoneNumber) {
+        alert("Lütfen tüm alanları doldurun.");
+        return;
+      }
+
+      const body = {
+        email,
+        password,
+        username,
+        phoneNumber
+      };
+
+      fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Kayıt başarısız!");
+        return res.text(); // backend'den gelen: "Doğrulama kodu gönderildi"
+      })
+      .then(data => {
+        alert(data); // Bilgi mesajı göster
+        window.location.href = "verify.html"; // doğrulama sayfasına yönlendir
+      })
+      .catch(err => alert("Hata: " + err.message));
+    }
+  </script>
+</body>
+</html>
+
+
+
+

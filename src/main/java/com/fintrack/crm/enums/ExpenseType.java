@@ -6,5 +6,7 @@ public enum ExpenseType {
     MARKET,
     ULASIM,
     EGLENCE,
-    DIGER
+    DIGER,
+    YEMEK,
+    BIR_DEFALIK;
 }

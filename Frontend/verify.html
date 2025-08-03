@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hesap Doğrulama</title>
+</head>
+<body>
+  <h2>Doğrulama Kodu Gir</h2>
+
+  <input id="email" placeholder="Kayıt olduğun email" />
+  <input id="code" placeholder="Doğrulama kodu" />
+
+  <button onclick="verify()">Doğrula</button>
+
+  <p><a href="login.html">Zaten hesabın var mı? Giriş Yap</a></p>
+
+  <script>
+    function verify() {
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('code').value.trim();
+
+      if (!email || !code) {
+        alert("Lütfen tüm alanları doldurun.");
+        return;
+      }
+
+      fetch("http://localhost:8080/auth/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: email, verificationCode: code })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Doğrulama başarısız!");
+        return res.text(); // Beklenen yanıt sadece düz bir mesaj
+      })
+      .then(data => {
+        alert(data); // Örn: "Doğrulama başarılı"
+        window.location.href = "login.html";
+      })
+      .catch(err => alert("Hata: " + err.message));
+    }
+  </script>
+</body>
+</html>
+
+
+

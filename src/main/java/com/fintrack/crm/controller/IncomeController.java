@@ -2,10 +2,12 @@ package com.fintrack.crm.controller;
 
 import com.fintrack.crm.dto.IncomeRequest;
 import com.fintrack.crm.entity.IncomeEntity;
+import com.fintrack.crm.entity.UserEntity;
 import com.fintrack.crm.entity.WalletEntity;
 import com.fintrack.crm.service.IIncomeService;
 import com.fintrack.crm.service.IWalletService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,24 +23,27 @@ public class IncomeController {
         this.incomeService = incomeService;
         this.walletService = walletService;
     }
+
     @PostMapping
-    public ResponseEntity<IncomeEntity> addIncome(@RequestBody IncomeRequest request) {
-        IncomeEntity saved = incomeService.addIncomeFromRequest(request);
+    public ResponseEntity<IncomeEntity> addIncome(@RequestBody IncomeRequest request,
+                                                  @AuthenticationPrincipal UserEntity user) {
+        IncomeEntity saved = incomeService.addIncomeFromRequest(request, user.getId());
         return ResponseEntity.ok(saved);
     }
 
     @GetMapping
-    public ResponseEntity<List<IncomeEntity>> getIncomes(@RequestParam Long userId) {
-        List<IncomeEntity> incomes = incomeService.getIncomesByUserId(userId);
+    public ResponseEntity<List<IncomeEntity>> getIncomes(@AuthenticationPrincipal UserEntity user) {
+        List<IncomeEntity> incomes = incomeService.getIncomesByUserId(user.getId());
         return ResponseEntity.ok(incomes);
     }
 
     @GetMapping("/wallet")
-    public ResponseEntity<WalletEntity> getWallet(@RequestParam Long userId) {
-        WalletEntity wallet = walletService.getWallet(userId);
+    public ResponseEntity<WalletEntity> getWallet(@AuthenticationPrincipal UserEntity user) {
+        WalletEntity wallet = walletService.getWallet(user.getId());
         return wallet != null ? ResponseEntity.ok(wallet) : ResponseEntity.notFound().build();
     }
 }
+
 
 
 

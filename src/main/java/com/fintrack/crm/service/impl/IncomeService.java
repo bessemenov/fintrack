@@ -24,7 +24,7 @@ public class IncomeService implements IIncomeService {
     public IncomeEntity addIncome(IncomeEntity income) {
         ValidationUtils.validateAmount(income.getAmount());
         IncomeEntity savedIncome = incomeRepository.save(income);
-        walletService.increaseBalance(income.getUserId(), income.getAmount());
+        walletService.increaseBalance(income.getWalletId(), income.getAmount());
         return savedIncome;
     }
 
@@ -34,17 +34,23 @@ public class IncomeService implements IIncomeService {
     }
 
     @Override
-    public IncomeEntity addIncomeFromRequest(IncomeRequest request) {
+    public IncomeEntity addIncomeFromRequest(IncomeRequest request, Long userId) {
         IncomeEntity income = new IncomeEntity();
-        income.setUserId(request.getUserId());
+        income.setUserId(userId);
+        income.setAmount(request.getAmount());
+        income.setWalletId(request.getWalletId());
+        income.setTagId(request.getTagId());
+        income.setCreatedAt(LocalDateTime.now());
+        income.setTransactionDateTime(request.getTransactionDateTime());
+        income.setDescription(request.getDescription());
+
         income.setIncomeType(request.getIncomeType());
         income.setPeriodType(request.getPeriodType());
-        income.setAmount(request.getAmount());
-        income.setCreatedAt(LocalDateTime.now());
 
         return addIncome(income);
     }
 }
+
 
 
 

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>FinTrack Dashboard</title>
+</head>
+<body>
+  <h2>Hoş Geldin!</h2>
+
+  <button onclick="logout()">Çıkış Yap</button>
+  <button onclick="window.location.href='transaction.html'">Yeni İşlem Ekle</button>
+  <button onclick="window.location.href='wallet-create.html'">Cüzdan Oluştur</button>
+
+  <hr>
+
+  <h3>Filtrele</h3>
+  <label>Tarih Aralığı:</label>
+  <input type="date" id="startDate"> -
+  <input type="date" id="endDate">
+  <br><br>
+
+  <label>İşlem Tipi:</label>
+  <select id="type" onchange="loadTagGroups()">
+    <option value="">Tümü</option>
+    <option value="INCOME">Gelir</option>
+    <option value="EXPENSE">Gider</option>
+  </select>
+  <br><br>
+
+  <label>Tag Grubu:</label>
+  <select id="groupSelect" onchange="filterTags()">
+    <option value="">Tümü</option>
+  </select>
+
+  <label>Tag:</label>
+  <select id="tagSelect">
+    <option value="">Tümü</option>
+  </select>
+  <br><br>
+
+  <button onclick="loadTransactions()">Filtrele ve Getir</button>
+
+  <hr>
+
+  <h3>İşlemler</h3>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Tarih</th>
+        <th>Tutar</th>
+        <th>Tip</th>
+        <th>Tag</th>
+        <th>Grup</th>
+      </tr>
+    </thead>
+    <tbody id="transactionsTable"></tbody>
+  </table>
+
+  <script>
+    let token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    let groupedTags = [];
+
+    window.onload = function() {
+      loadTagGroups();
+      loadTransactions();
+    };
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    function loadTagGroups() {
+      const selectedType = document.getElementById("type").value;
+      let url = "http://localhost:8080/tags/tag-group";
+      if (selectedType) {
+        url += "?type=" + selectedType;
+      }
+
+      fetch(url, {
+        headers: { "Authorization": token }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Tag grupları yüklenemedi.");
+        return res.json();
+      })
+      .then(data => {
+        groupedTags = data;
+        const groupSelect = document.getElementById("groupSelect");
+        groupSelect.innerHTML = "<option value=''>Tümü</option>";
+        data.forEach(group => {
+          const opt = document.createElement("option");
+          opt.value = group.groupName;
+          opt.innerText = group.groupName;
+          groupSelect.appendChild(opt);
+        });
+        filterTags();
+      })
+      .catch(err => alert("Tag hatası: " + err.message));
+    }
+
+    function filterTags() {
+      const selectedGroup = document.getElementById("groupSelect").value;
+      const tagSelect = document.getElementById("tagSelect");
+      tagSelect.innerHTML = "<option value=''>Tümü</option>";
+
+      let filtered = [];
+
+      groupedTags.forEach(group => {
+        if (!selectedGroup || group.groupName === selectedGroup) {
+          filtered = filtered.concat(group.tags);
+        }
+      });
+
+      filtered.forEach(tag => {
+        const opt = document.createElement("option");
+        opt.value = tag.name;
+        opt.innerText = tag.name;
+        tagSelect.appendChild(opt);
+      });
+    }
+
+    function loadTransactions() {
+  let url = "http://localhost:8080/wallet-transactions?";
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+  const type = document.getElementById("type").value;
+  const tagId = document.getElementById("tagSelect").value;
+
+  if (start) url += `startDate=${start}&`;
+  if (end) url += `endDate=${end}&`;
+  if (type) url += `type=${type}&`;
+  if (tagId) url += `tag=${tagId}&`;
+
+  fetch(url, {
+    headers: { "Authorization": token }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("İşlemler getirilemedi.");
+    return res.json();
+  })
+  .then(data => {
+    const table = document.getElementById("transactionsTable");
+    table.innerHTML = "";
+
+    data.forEach(tx => {
+      const row = `<tr>
+        <td>${tx.transactionDate}</td>
+        <td>${tx.amount}</td>
+        <td>${tx.type}</td>
+        <td>${tx.tagName}</td>
+        <td>${tx.groupName}</td>
+      </tr>`;
+      table.innerHTML += row;
+    });
+  })
+  .catch(err => alert("İşlem hatası: " + err.message));
+}
+
+  </script>
+</body>
+</html>
+
+

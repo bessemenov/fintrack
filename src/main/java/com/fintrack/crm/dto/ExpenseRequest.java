@@ -8,20 +8,20 @@ import java.time.LocalDateTime;
 
 public class ExpenseRequest {
 
-    private Long expenseId;
-    private Long walletId;
-    private Long userId;
-    private ExpenseType expenseType;
     private BigDecimal amount;
+    private Long walletId;
+    private Long tagId;
+    private LocalDateTime transactionDateTime;
+    private String description;
     private PeriodType periodType;
-    private LocalDateTime transactionDate;
+    private ExpenseType expenseType;
 
-    public Long getExpenseId() {
-        return expenseId;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setExpenseId(Long expenseId) {
-        this.expenseId = expenseId;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     public Long getWalletId() {
@@ -32,28 +32,28 @@ public class ExpenseRequest {
         this.walletId = walletId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getTagId() {
+        return tagId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
-    public ExpenseType getExpenseType() {
-        return expenseType;
+    public LocalDateTime getTransactionDateTime() {
+        return transactionDateTime;
     }
 
-    public void setExpenseType(ExpenseType expenseType) {
-        this.expenseType = expenseType;
+    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+        this.transactionDateTime = transactionDateTime;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public PeriodType getPeriodType() {
@@ -64,12 +64,13 @@ public class ExpenseRequest {
         this.periodType = periodType;
     }
 
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
+    public ExpenseType getExpenseType() {
+        return expenseType;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setExpenseType(ExpenseType expenseType) {
+        this.expenseType = expenseType;
     }
 }
+
 

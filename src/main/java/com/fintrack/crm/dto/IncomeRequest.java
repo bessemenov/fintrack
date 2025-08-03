@@ -7,20 +7,54 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class IncomeRequest {
-    private Long userId;
+
+    private BigDecimal amount;
+    private LocalDateTime transactionDateTime;
+    private Long tagId;
+    private Long walletId;
+    private String description;
+
     private IncomeType incomeType;
     private PeriodType periodType;
-    private BigDecimal amount;
-    private LocalDateTime transactionDate;
-    private Long incomeId;
-    private Long walletId;
 
-    public Long getUserId() {
-        return userId;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDateTime getTransactionDateTime() {
+        return transactionDateTime;
+    }
+
+    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+        this.transactionDateTime = transactionDateTime;
+    }
+
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
+    }
+
+    public Long getWalletId() {
+        return walletId;
+    }
+
+    public void setWalletId(Long walletId) {
+        this.walletId = walletId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public IncomeType getIncomeType() {
@@ -38,37 +72,4 @@ public class IncomeRequest {
     public void setPeriodType(PeriodType periodType) {
         this.periodType = periodType;
     }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
-    public Long getIncomeId() {
-        return incomeId;
-    }
-
-    public void setIncomeId(Long incomeId) {
-        this.incomeId = incomeId;
-    }
-
-    public Long getWalletId() {
-        return walletId;
-    }
-
-    public void setWalletId(Long walletId) {
-        this.walletId = walletId;
-    }
-
 }

@@ -5,11 +5,11 @@ import com.fintrack.crm.entity.IncomeEntity;
 
 import java.util.List;
 
-
 public interface IIncomeService {
+
     IncomeEntity addIncome(IncomeEntity income);
 
-    IncomeEntity addIncomeFromRequest(IncomeRequest request); // Bunu ekle
+    IncomeEntity addIncomeFromRequest(IncomeRequest request, Long userId);
 
     List<IncomeEntity> getIncomesByUserId(Long userId);
 

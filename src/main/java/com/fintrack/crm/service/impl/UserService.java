@@ -6,8 +6,6 @@ import com.fintrack.crm.entity.UserVerificationEntity;
 import com.fintrack.crm.enums.UserVerificationStatus;
 import com.fintrack.crm.repository.UserRepository;
 import com.fintrack.crm.repository.UserVerificationRepository;
-import com.fintrack.crm.service.impl.EmailService;
-import com.fintrack.crm.service.UserService;
 import com.fintrack.exception.BusinessException;
 import com.fintrack.exception.enums.ErrorResultCode;
 import com.fintrack.security.utils.JwtUtil;
@@ -24,9 +22,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserService implements com.fintrack.crm.service.UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final UserVerificationRepository userVerificationRepository;
@@ -34,10 +32,10 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository,
-                           UserVerificationRepository userVerificationRepository,
-                           PasswordEncoder passwordEncoder,
-                           JwtUtil jwtUtil, EmailService emailService) {
+    public UserService(UserRepository userRepository,
+                       UserVerificationRepository userVerificationRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil, EmailService emailService) {
         this.userRepository = userRepository;
         this.userVerificationRepository = userVerificationRepository;
         this.passwordEncoder = passwordEncoder;

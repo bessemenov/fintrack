@@ -1,5 +1,6 @@
 package com.fintrack.crm.service.impl;
 
+import com.fintrack.crm.dto.ExpenseRequest;
 import com.fintrack.crm.entity.ExpenseEntity;
 import com.fintrack.crm.repository.ExpenseRepository;
 import com.fintrack.crm.service.IExpenseService;
@@ -13,7 +14,7 @@ import java.util.List;
 public class ExpenseService implements IExpenseService {
 
     private final ExpenseRepository expenseRepository;
-    private final IWalletService walletService; // DI için interface
+    private final IWalletService walletService;
 
     public ExpenseService(ExpenseRepository expenseRepository, IWalletService walletService) {
         this.expenseRepository = expenseRepository;
@@ -22,10 +23,23 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public ExpenseEntity addExpense(ExpenseEntity expense) {
-        expense.setCreatedAt(LocalDateTime.now());
         ExpenseEntity savedExpense = expenseRepository.save(expense);
-        walletService.decreaseBalance(expense.getUserId(), expense.getAmount());
+        walletService.decreaseBalance(expense.getWalletId(), expense.getAmount());
         return savedExpense;
+    }
+
+    @Override
+    public ExpenseEntity addExpenseFromRequest(ExpenseRequest request, Long userId) {
+        ExpenseEntity expense = new ExpenseEntity();
+        expense.setUserId(userId);
+        expense.setWalletId(request.getWalletId());
+        expense.setAmount(request.getAmount());
+        expense.setTagId(request.getTagId());
+        expense.setTransactionDateTime(request.getTransactionDateTime());
+        expense.setCreatedAt(LocalDateTime.now());
+        expense.setDescription(request.getDescription());
+
+        return addExpense(expense);
     }
 
     @Override
@@ -33,3 +47,4 @@ public class ExpenseService implements IExpenseService {
         return expenseRepository.findByUserId(userId);
     }
 }
+

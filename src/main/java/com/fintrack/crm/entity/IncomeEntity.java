@@ -18,19 +18,35 @@ public class IncomeEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private IncomeType incomeType;
+    @Column(name = "wallet_id", nullable = false)
+    private Long walletId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PeriodType periodType;
+    @Column(name = "income_type", nullable = false)
+    private IncomeType incomeType = IncomeType.STANDART;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "period_type", nullable = false)
+    private PeriodType periodType = PeriodType.ONCE;
 
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Column(name = "tag_id", nullable = false)
+    private Long tagId;
+
+    @Column(name = "transaction_date_time", nullable = false)
+    private LocalDateTime transactionDateTime;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tag_id", insertable = false, updatable = false)
+    private TagEntity tag;
 
     public Long getId() {
         return id;
@@ -46,6 +62,14 @@ public class IncomeEntity {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getWalletId() {
+        return walletId;
+    }
+
+    public void setWalletId(Long walletId) {
+        this.walletId = walletId;
     }
 
     public IncomeType getIncomeType() {
@@ -72,6 +96,30 @@ public class IncomeEntity {
         this.amount = amount;
     }
 
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
+    }
+
+    public LocalDateTime getTransactionDateTime() {
+        return transactionDateTime;
+    }
+
+    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+        this.transactionDateTime = transactionDateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -79,6 +127,17 @@ public class IncomeEntity {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public TagEntity getTag() {
+        return tag;
+    }
+
+    public void setTag(TagEntity tag) {
+        this.tag = tag;
+    }
 }
+
+
+
 
 

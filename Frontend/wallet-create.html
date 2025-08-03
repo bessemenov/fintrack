@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Cüzdan Oluştur</title>
+</head>
+<body>
+  <h2>Yeni Cüzdan Oluştur</h2>
+
+  <form id="walletForm" onsubmit="createWallet(event)">
+    <input id="balance" type="number" step="0.01" placeholder="Başlangıç Bakiyesi (₺)" required />
+    <button type="submit">Oluştur</button>
+  </form>
+
+  <p><a href="dashboard.html">Dashboard'a dön</a></p>
+
+  <script>
+    function createWallet(e) {
+      e.preventDefault();
+
+      const balanceInput = document.getElementById("balance");
+      const balance = parseFloat(balanceInput.value);
+
+      if (isNaN(balance) || balance < 0) {
+        alert("Lütfen geçerli ve pozitif bir bakiye girin.");
+        return;
+      }
+
+      let token = localStorage.getItem("token");
+      if (!token) {
+        alert("Lütfen önce giriş yapın.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      fetch("http://localhost:8080/wallets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ balance })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Cüzdan oluşturulamadı! Statü: " + res.status);
+        return res.json();
+      })
+      .then(data => {
+        alert(`Cüzdan oluşturuldu! ID: ${data.id}`);
+        window.location.href = "dashboard.html";
+      })
+      .catch(err => {
+        alert("Hata: " + err.message);
+      });
+    }
+  </script>
+</body>
+</html>
+
+

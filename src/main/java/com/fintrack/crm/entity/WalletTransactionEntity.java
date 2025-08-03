@@ -100,6 +100,27 @@ public class WalletTransactionEntity {
         this.tagId = tagId;
     }
 
+    @Transient
+    public TagEntity getTag() {
+        if (income != null) {
+            return income.getTag();
+        } else if (expense != null) {
+            return expense.getTag();
+        }
+        return null;
+    }
+
+    @Transient
+    public String getTagName() {
+        TagEntity tag = getTag();
+        return tag != null ? tag.getTagName() : "Unknown";
+    }
+
+    @Transient
+    public String getGroupName() {
+        TagEntity tag = getTag();
+        return tag != null && tag.getGroup() != null ? tag.getGroup().getTagGroupName() : "Unknown";
+    }
 
 }
 

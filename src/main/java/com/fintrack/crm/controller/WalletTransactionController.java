@@ -1,13 +1,18 @@
 package com.fintrack.crm.controller;
 
 import com.fintrack.crm.dto.ExpenseRequest;
+import com.fintrack.crm.dto.GroupedTransactionResponse;
 import com.fintrack.crm.dto.IncomeRequest;
-import com.fintrack.crm.dto.WalletTransactionRequest;
+import com.fintrack.crm.dto.WalletTransactionResponse;
+import com.fintrack.security.service.UserDetailsImpl;
 import com.fintrack.crm.service.impl.WalletTransactionService;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/wallet-transactions")
@@ -19,53 +24,59 @@ public class WalletTransactionController {
         this.walletTransactionService = walletTransactionService;
     }
 
-    // ✅ 1. Income ekleme
-    @PostMapping("/income")
-    public ResponseEntity<?> addIncomeToWallet(@RequestBody IncomeRequest request) {
-        walletTransactionService.addIncomeToWallet(request);
-        return ResponseEntity.ok("Income successfully added to wallet.");
+    @GetMapping
+    public ResponseEntity<List<WalletTransactionResponse>> getFilteredTransactions(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(required = false, name = "start") LocalDateTime startDateTime,
+            @RequestParam(required = false, name = "end") LocalDateTime endDateTime) {
+
+        Long userId = userDetails.getId();
+        List<WalletTransactionResponse> results = walletTransactionService.getFilteredTransactions(userId, startDateTime, endDateTime);
+        return ResponseEntity.ok(results);
     }
 
-    // ✅ 2. Expense çıkarma
-    @PostMapping("/expense")
-    public ResponseEntity<?> addExpenseToWallet(@RequestBody ExpenseRequest request) {
-        walletTransactionService.addExpenseToWallet(request);
-        return ResponseEntity.ok("The expense was successfully deducted from the wallet.");
-    }
-
-    // ✅ 3. Belirli bir wallet'ın tüm transaction'ları
-    @GetMapping("/{walletId}")
-    public ResponseEntity<?> getTransactionsByWalletId(@PathVariable Long walletId) {
-        return ResponseEntity.ok(walletTransactionService.getTransactionsByWalletId(walletId));
-    }
-
-    // ✅ 4. Genel transaction ekleme
-    @PostMapping
-    public ResponseEntity<?> createTransaction(@RequestBody WalletTransactionRequest request,
-                                               @RequestHeader("X-USER-ID") Long userId) {
-        walletTransactionService.createTransaction(request, userId);
-        return ResponseEntity.ok("Transaction created successfully.");
-    }
-
-    // ✅ 5. Filtreli transaction listesi (start-end)
-    @GetMapping("/filtered")
-    public ResponseEntity<?> getFilteredTransactions(@RequestHeader("X-USER-ID") Long userId,
-                                                     @RequestParam(required = false) LocalDateTime startDateTime,
-                                                     @RequestParam(required = false) LocalDateTime endDateTime) {
-        return ResponseEntity.ok(walletTransactionService.getFilteredTransactions(userId, startDateTime, endDateTime));
-    }
     @GetMapping("/grouped")
-    public ResponseEntity<?> getGroupedTransactions(
-            @RequestHeader("X-USER-ID") Long userId,
-            @RequestParam(required = false) LocalDateTime startDateTime,
-            @RequestParam(required = false) LocalDateTime endDateTime) {
+    public ResponseEntity<List<GroupedTransactionResponse>> getGroupedTransactions(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(required = false, name = "start") LocalDateTime startDateTime,
+            @RequestParam(required = false, name = "end") LocalDateTime endDateTime) {
 
-        return ResponseEntity.ok(
-                walletTransactionService.getFilteredTransactions(userId, startDateTime, endDateTime)
-        );
+        Long userId = userDetails.getId();
+        List<GroupedTransactionResponse> results = walletTransactionService.getGroupedTransactions(userId, startDateTime, endDateTime);
+        return ResponseEntity.ok(results);
     }
 
+    @PostMapping("/incomes")
+    public ResponseEntity<?> addIncome(
+            @RequestBody IncomeRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(403).body("Kullanıcı doğrulanamadı.");
+        }
+
+        Long userId = userDetails.getId();
+        walletTransactionService.addIncomeFromRequest(request, userId);
+        return ResponseEntity.ok("Gelir işlemi başarıyla eklendi.");
+    }
+
+    @PostMapping("/expenses")
+    public ResponseEntity<?> addExpense(
+            @RequestBody ExpenseRequest request,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        if (userDetails == null) {
+            return ResponseEntity.status(403).body("Kullanıcı doğrulanamadı.");
+        }
+
+        Long userId = userDetails.getId();
+        walletTransactionService.addExpenseFromRequest(request, userId);
+        return ResponseEntity.ok("Gider işlemi başarıyla eklendi.");
+    }
 }
+
+
+
 
 
 

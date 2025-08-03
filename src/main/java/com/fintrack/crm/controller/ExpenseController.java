@@ -2,10 +2,10 @@ package com.fintrack.crm.controller;
 
 import com.fintrack.crm.dto.ExpenseRequest;
 import com.fintrack.crm.entity.ExpenseEntity;
-import com.fintrack.crm.service.impl.ExpenseService;
-import com.fintrack.security.utils.JwtUtil;
-import org.springframework.http.HttpStatus;
+import com.fintrack.crm.entity.UserEntity;
+import com.fintrack.crm.service.IExpenseService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,49 +14,23 @@ import java.util.List;
 @RequestMapping("/expenses")
 public class ExpenseController {
 
-    private final ExpenseService expenseService;
-    private final JwtUtil jwtUtil;
+    private final IExpenseService expenseService;
 
-    public ExpenseController(ExpenseService expenseService, JwtUtil jwtUtil) {
+    public ExpenseController(IExpenseService expenseService) {
         this.expenseService = expenseService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseEntity> addExpense(
-            @RequestBody ExpenseRequest request,
-            @RequestHeader("Authorization") String authHeader) {
-
-        String token = authHeader.substring(7);
-        Long currentUserId = jwtUtil.extractUserId(token);
-
-        if (!currentUserId.equals(request.getUserId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        ExpenseEntity expense = new ExpenseEntity();
-        expense.setUserId(request.getUserId());
-        expense.setExpenseType(request.getExpenseType());
-        expense.setAmount(request.getAmount());
-        expense.setPeriodType(request.getPeriodType());
-
-        ExpenseEntity saved = expenseService.addExpense(expense);
+    public ResponseEntity<ExpenseEntity> addExpense(@RequestBody ExpenseRequest request,
+                                                    @AuthenticationPrincipal UserEntity user) {
+        ExpenseEntity saved = expenseService.addExpenseFromRequest(request, user.getId());
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<ExpenseEntity>> getExpenses(
-            @PathVariable Long userId,
-            @RequestHeader("Authorization") String authHeader) {
-
-        String token = authHeader.substring(7);
-        Long currentUserId = jwtUtil.extractUserId(token);
-
-        if (!currentUserId.equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        List<ExpenseEntity> expenses = expenseService.getExpensesByUserId(userId);
+    @GetMapping
+    public ResponseEntity<List<ExpenseEntity>> getExpenses(@AuthenticationPrincipal UserEntity user) {
+        List<ExpenseEntity> expenses = expenseService.getExpensesByUserId(user.getId());
         return ResponseEntity.ok(expenses);
     }
 }
+
